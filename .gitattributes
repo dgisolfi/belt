@@ -1,0 +1,10 @@
+# Handle line endings automatically for files detected as text 
+# and normalize them to LF in the repo.
+* text=auto
+
+# Explicitly force LF on checkout for all text files (prevents CRLF on Windows)
+* eol=lf
+
+# binary and should not be modified
+*.png binary
+*.jpg binary
