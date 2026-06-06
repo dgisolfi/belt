@@ -12,18 +12,26 @@ from dataclasses import dataclass
 from typing import Any
 
 from belt.data.iris import SupervisedData, iris
+from belt.data.translation import TranslationData, load_translation_data
 
 
 # Data registry
 @dataclass(frozen=True)
 class DatasetLoaders:
-    supervised: Callable[..., SupervisedData]
+    supervised: Callable[..., SupervisedData] | None = None
+    translation: Callable[..., TranslationData] | None = None
 
 
 dataset_registry: dict[str, DatasetLoaders] = {
     "iris": DatasetLoaders(
         supervised=iris,
-    )
+    ),
+    "opus_books_en_fr": DatasetLoaders(
+        translation=load_translation_data,
+    ),
+    "multi30k_en_de": DatasetLoaders(
+        translation=load_translation_data,
+    ),
 }
 
 

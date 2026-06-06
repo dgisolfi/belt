@@ -110,7 +110,6 @@ class SupervisedPipeline(ABC):
         }
         save_json(metrics, config["output"]["metrics_path"])
         log_training_end(type(self).__name__, timer)
-        print(f"accuracy={metrics['accuracy']:.3f}")
         return metrics
 
     def _train_epoch(self) -> float:

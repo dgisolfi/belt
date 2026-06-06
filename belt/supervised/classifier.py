@@ -104,3 +104,8 @@ class SoftmaxPipeline(SupervisedPipeline):
         model_path = path.with_suffix(".npz")
         model_path.parent.mkdir(parents=True, exist_ok=True)
         np.savez(model_path, **self.model.state_dict())
+
+
+def deploy(config_path: str, overrides: dict | None = None) -> dict[str, object]:
+    metrics = SoftmaxPipeline().run(config_path, overrides)
+    print(f"accuracy={metrics['accuracy']:.3f}")

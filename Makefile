@@ -10,6 +10,6 @@ train:
 	python -m belt.supervised.softmax --config configs/supervised_softmax.yaml
 
 clean:
-	rm -rf .pytest_cache .ruff_cache build dist out *.egg-info
+	rm -rf .pytest_cache .ruff_cache build dist out *.egg-info data
 
 .PHONY: install lint train clean 
