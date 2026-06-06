@@ -1,0 +1,27 @@
+seed: 42
+dataset: iris
+model_name: SoftmaxRegressor
+
+data:
+  test_size: 0.2
+  val_size: 0.2
+  batch_size: 16
+
+model:
+  input_dim: 4
+  num_classes: 3
+  weight_scale: 0.001
+  seed: 1024
+  relu_logits: true
+
+optimizer:
+  learning_rate: 0.1
+  reg: 0.001
+
+training:
+  epochs: 30
+  debug: false
+
+output:
+  checkpoint_dir: out/supervised_softmax/checkpoints
+  metrics_path: out/supervised_softmax/metrics.json

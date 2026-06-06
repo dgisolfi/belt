@@ -6,7 +6,10 @@ lint:
 	python -m isort belt
 	python -m ruff check belt tests
 
-clean:
-	rm -rf .pytest_cache .ruff_cache build dist outputs *.egg-info
+train:
+	python -m belt.supervised.softmax --config configs/supervised_softmax.yaml
 
-.PHONY: install lint clean 
+clean:
+	rm -rf .pytest_cache .ruff_cache build dist out *.egg-info
+
+.PHONY: install lint train clean 
