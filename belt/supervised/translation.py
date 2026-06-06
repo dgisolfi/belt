@@ -1,3 +1,11 @@
+"""Translation Pipeline
+
+Author(s)
+---------
+Daniel Nicolas Gisolfi <dgisolfi3@gatech.edu>
+"""
+
+
 from pathlib import Path
 
 from sklearn.metrics import accuracy_score
