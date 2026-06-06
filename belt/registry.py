@@ -7,13 +7,13 @@ Author(s)
 Daniel Nicolas Gisolfi <dgisolfi3@gatech.edu>
 """
 
-from typing import Any
-
 from collections.abc import Callable
 from dataclasses import dataclass
+from typing import Any
 
 from belt.data.iris import SupervisedData, iris
 from belt.data.translation import TranslationData, load_translation_data
+
 
 # Data registry
 @dataclass(frozen=True)

@@ -4,19 +4,23 @@ Author(s)
 ---------
 Daniel Nicolas Gisolfi <dgisolfi3@gatech.edu>
 """
+
 import torch
 from torch import nn
+
+from belt.supervised.models import supervised_model_registry
 
 
 class Encoder(nn.Module):
     """Encoder module for the Seq2Seq model"""
+
     def __init__(
-        self, 
+        self,
         input_size,
         emb_size,
         encoder_hidden_size,
         decoder_hidden_size,
-        dropout=0.2
+        dropout=0.2,
     ):
         super().__init__()
         self.input_size = input_size
@@ -37,18 +41,20 @@ class Encoder(nn.Module):
         """Encode source token IDs"""
         embeddings = self.emb(input)
 
+
 class Decoder(nn.Module):
     """Decoder module for the Seq2Seq model"""
 
-    def __init__(self,
+    def __init__(
+        self,
         emb_size,
         encoder_hidden_size,
         decoder_hidden_size,
         output_size,
-        dropout=0.2
+        dropout=0.2,
     ):
         super().__init__()
-        
+
         self.emb_size = emb_size
         self.encoder_hidden_size = encoder_hidden_size
         self.decoder_hidden_size = decoder_hidden_size
@@ -67,6 +73,8 @@ class Decoder(nn.Module):
         """Decode one token step"""
         embeddings = self.emb(input)
 
+
+@supervised_model_registry.register("Seq2Seq")
 class Seq2Seq(nn.Module):
     """Sequence-to-sequence encoder/decoder model"""
 

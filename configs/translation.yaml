@@ -1,0 +1,36 @@
+seed: 42
+device: auto
+dataset: multi30k_en_de
+model_name: Seq2Seq
+
+data:
+  dataset_name: bentrevett/multi30k
+  dataset_config:
+  source_lang: en
+  target_lang: de
+  split: train
+  sample_size: 29000
+  val_size: 1000
+  test_size: 1000
+  batch_size: 64
+  max_length: 40
+  suppress_symlink_warning: true
+  shuffle: true
+
+model:
+  emb_size: 256
+  encoder_hidden_size: 512
+  decoder_hidden_size: 512
+  dropout: 0.3
+  model_type: RNN
+  attention: true
+
+training:
+  epochs: 30
+  lr: 0.0005
+  weight_decay: 0.00001
+
+output:
+  checkpoint_dir: out/translation/checkpoints
+  metrics_path: out/translation/metrics.json
+  sample_count: 3

@@ -19,8 +19,8 @@ _DEFAULT_CONFIGS: dict[str, str] = {
 }
 
 PIPELINES = {
-    "classifier": softmax_train(),
-    "translation": translation_train(),
+    "classifier": softmax_train,
+    "translation": translation_train,
 }
 
 
@@ -31,7 +31,7 @@ def cli():
     )
     parser.add_argument(
         "--pipeline",
-        choices=["classifier"],
+        choices=PIPELINES.keys(),
         required=True,
         help="Pipeline to run.",
     )
@@ -39,6 +39,11 @@ def cli():
         "--config",
         default=None,
         help="Path to YAML config. Defaults to configs/<pipeline>.yaml",
+    )
+    parser.add_argument(
+        "--no-cache",
+        action="store_true",
+        help="Force re-download of datasets and tokenizers, ignoring local cache.",
     )
     return parser
 
@@ -48,8 +53,9 @@ def main() -> None:
     args = parser.parse_args()
 
     config_path = args.config or _DEFAULT_CONFIGS[args.pipeline]
+    overrides = {"no_cache": args.no_cache} if args.no_cache else None
 
-    metrics = PIPELINES[args.pipeline](config_path, None)
+    metrics = PIPELINES[args.pipeline](config_path, overrides)
     key = "test_accuracy"
 
     if key in metrics:
