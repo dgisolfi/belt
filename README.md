@@ -1,20 +1,48 @@
 # belt
-A composable machine learning toolbet
 
-## Tasks
+A composable machine learning toolbelt
 
-### Supervised
+## Pipelines
 
-#### Mulitclass Classification
+ML Tasks are broken into pipelines allowing models to be used with multiple pipelines and datasets.
 
-Using the `belt/supervised/models/softmax_regressor.py` and a dataset like iris (the default) the classfication pipeline can drive the supervised training and validation. Run using:
+| Pipeline | Model | Dataset |
+|---|---|---|
+| `classifier` | SoftmaxRegressor (NumPy) | Iris |
+| `translation` | Seq2Seq RNN/LSTM | multi30k, opus_books |
 
+## Usage
+
+```bash
+# Softmax classifier
+python -m belt classifier
 ```
-python -m belt --pipeline classifier
+
+Configs live in `configs/`. Each pipeline has a YAML controlling data, model, training, and output settings.
+
+## Extending
+
+**New model**: register with the decorator, then set `model_name` in your config:
+
+```python
+from belt.supervised.models import supervised_model_registry
+
+@supervised_model_registry.register("NewModel")
+class NewModel(nn.Module):
+    pass
 ```
 
-#### Translation
+**New dataset**: add a loader to `belt/data/` and register it in `belt/registry.py`.
 
-```
-python -m belt --pipeline translate
+## Data cache
+
+Downloaded datasets and tokenizers are stored under `data/` at the repo root and reused on subsequent runs. Pass `--no-cache` to force a fresh download.
+
+## Install
+
+```bash
+python -m pip install -e .
+
+# DirectML backend (Windows GPU):
+python -m pip install -e .[directml]
 ```

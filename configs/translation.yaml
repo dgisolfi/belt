@@ -22,7 +22,6 @@ model:
   encoder_hidden_size: 512
   decoder_hidden_size: 512
   dropout: 0.3
-  model_type: RNN
   attention: true
 
 training:

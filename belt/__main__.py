@@ -11,11 +11,10 @@ import argparse
 
 from belt.supervised.classifier import deploy as softmax_train
 from belt.supervised.translation import deploy as translation_train
-from belt.utils import logger
 
 _DEFAULT_CONFIGS: dict[str, str] = {
-    "classifier": "configs/supervised_softmax.yaml",
-    "translation": "configs/translation.yaml",
+    "classifier": "configs/softmax_classifier.yaml",
+    "translation": "configs/translation_small.yaml",
 }
 
 PIPELINES = {
@@ -30,9 +29,8 @@ def cli():
         description="Run an ML pipeline",
     )
     parser.add_argument(
-        "--pipeline",
+        "pipeline",
         choices=PIPELINES.keys(),
-        required=True,
         help="Pipeline to run.",
     )
     parser.add_argument(
@@ -55,11 +53,7 @@ def main() -> None:
     config_path = args.config or _DEFAULT_CONFIGS[args.pipeline]
     overrides = {"no_cache": args.no_cache} if args.no_cache else None
 
-    metrics = PIPELINES[args.pipeline](config_path, overrides)
-    key = "test_accuracy"
-
-    if key in metrics:
-        logger.info("%s=%.3f", key, metrics[key])
+    PIPELINES[args.pipeline](config_path, overrides)
 
 
 if __name__ == "__main__":

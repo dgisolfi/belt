@@ -23,10 +23,10 @@ from datasets import load_dataset
 from torch.utils.data import DataLoader, Dataset
 from transformers import AutoTokenizer, PreTrainedTokenizerBase
 
-DATASETS = {
-    "Helsinki-NLP/opus_books": "Helsinki-NLP/opus_books",
-    "bentrevett/multi30k": "bentrevett/multi30k"
-}
+SUPPORTED_DATASETS = [
+    "Helsinki-NLP/opus_books",
+    "bentrevett/multi30k",
+]
 
 
 @dataclass(frozen=True)
@@ -112,9 +112,10 @@ def load_translation_data(
     # opus-mt is directional, one tokenizer covers both sides
     target_tokenizer = source_tokenizer
 
+    if dataset_name not in SUPPORTED_DATASETS:
+        raise ValueError(f"Unsupported dataset '{dataset_name}'. Choose from: {SUPPORTED_DATASETS}")
     download_mode = "force_redownload" if no_cache else "reuse_dataset_if_exists"
     dataset_split = f"{split}[:{sample_size}]" if sample_size else split
-    dataset_name = DATASETS[dataset_name]
     raw = (
         load_dataset(dataset_name, dataset_config, split=dataset_split, download_mode=download_mode)
         if dataset_config

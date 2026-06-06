@@ -107,4 +107,5 @@ class SoftmaxPipeline(SupervisedPipeline):
 
 
 def deploy(config_path: str, overrides: dict | None = None) -> dict[str, object]:
-    return SoftmaxPipeline().run(config_path, overrides)
+    metrics = SoftmaxPipeline().run(config_path, overrides)
+    print(f"accuracy={metrics['accuracy']:.3f}")
