@@ -24,6 +24,7 @@ class SupervisedData:
     test_loader: DataLoader
     class_names: list[str]
 
+
 def load_dataset(
     features: np.ndarray,
     labels: np.ndarray,
@@ -72,10 +73,10 @@ def iris(
     x_test = scaler.transform(x_test).astype("float32")
 
     return SupervisedData(
-        train_loader=load_dataset(x_train, y_train, batch_size=batch_size, shuffle=True),
+        train_loader=load_dataset(
+            x_train, y_train, batch_size=batch_size, shuffle=True
+        ),
         val_loader=load_dataset(x_val, y_val, batch_size=batch_size, shuffle=False),
         test_loader=load_dataset(x_test, y_test, batch_size=batch_size, shuffle=False),
         class_names=class_names,
     )
-
-

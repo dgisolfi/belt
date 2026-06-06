@@ -10,6 +10,7 @@ Daniel Nicolas Gisolfi <dgisolfi3@gatech.edu>
 from collections.abc import Callable
 from dataclasses import dataclass
 from typing import Any
+
 from belt.data.iris import SupervisedData, iris
 
 
@@ -18,11 +19,13 @@ from belt.data.iris import SupervisedData, iris
 class DatasetLoaders:
     supervised: Callable[..., SupervisedData]
 
+
 dataset_registry: dict[str, DatasetLoaders] = {
     "iris": DatasetLoaders(
         supervised=iris,
     )
 }
+
 
 # Basic Registry for Models and other composable components
 class Registry(dict[str, type]):

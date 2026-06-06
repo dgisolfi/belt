@@ -7,7 +7,6 @@ Daniel Nicolas Gisolfi <dgisolfi3@gatech.edu>
 
 import numpy as np
 
-
 from belt.supervised.models import supervised_model_registry
 
 

@@ -9,7 +9,7 @@ Daniel Nicolas Gisolfi <dgisolfi3@gatech.edu>
 
 import argparse
 
-from belt.supervised.pipeline import SupervisedPipeline as softmax_train
+from belt.supervised.classifier import SoftmaxPipeline as softmax_train
 from belt.utils import logger
 
 _DEFAULT_CONFIGS: dict[str, str] = {
@@ -17,7 +17,7 @@ _DEFAULT_CONFIGS: dict[str, str] = {
 }
 
 PIPELINES = {
-    "classifier": softmax_train.run,
+    "classifier": softmax_train().run,
 }
 
 
@@ -28,7 +28,7 @@ def cli():
     )
     parser.add_argument(
         "--pipeline",
-        choices=[ "classifier"],
+        choices=["classifier"],
         required=True,
         help="Pipeline to run.",
     )
