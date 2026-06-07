@@ -16,6 +16,8 @@ ML Tasks are broken into pipelines allowing models to be used with multiple pipe
 ```bash
 # Softmax classifier
 python -m belt classifier
+# Seq2Seq text translation
+python -m belt translation
 ```
 
 Configs live in `configs/`. Each pipeline has a YAML controlling data, model, training, and output settings.

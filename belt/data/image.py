@@ -8,7 +8,6 @@ Author(s)
 Daniel Nicolas Gisolfi <dgisolfi3@gatech.edu>
 """
 
-
 from torch.utils.data import DataLoader
 from torchvision.datasets import CIFAR10, FashionMNIST
 
