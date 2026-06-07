@@ -10,6 +10,7 @@ from pathlib import Path
 from typing import Any
 
 import torch
+from sklearn.metrics import accuracy_score
 
 from belt.utils import (
     ensure_parent,
@@ -17,6 +18,7 @@ from belt.utils import (
     log_training_end,
     log_training_start,
     plant,
+    save_checkpoint,
     save_json,
 )
 
@@ -25,7 +27,7 @@ class SupervisedPipeline(ABC):
     """base class for all supervised training pipelines
 
     Subclass and override the five abstract methods to add a new supervised
-    task or model type. The shared run func will drive the training and evaluation loop.
+    task or model type. The shared run func will drive the training and evaluation loop
     """
 
     train_loader: Any
@@ -58,8 +60,7 @@ class SupervisedPipeline(ABC):
         return float(record.get("val_loss", float("inf")))
 
     def is_better(self, current: float | None, new: float) -> bool:
-        """Return True when new score is better than current.
-        Default: lower is better. Override for metrics that should be maximized."""
+        """Return True when new score is better than current"""
         return current is None or new < current
 
     def extra_metrics(self, config: dict) -> dict[str, object]:
@@ -134,3 +135,55 @@ class SupervisedPipeline(ABC):
                 all_preds.extend(preds)
                 all_targets.extend(targets)
         return total_loss / max(total_n, 1), all_preds, all_targets
+
+
+class TorchPipeline(SupervisedPipeline):
+    """base pytorch defaults for a supervised pipeline
+
+    subclasses implement setup() and extra_metrics() if needed
+    override _compute_loss() or _extract_preds() to avoid duplicating train / eval loop
+    """
+
+    _metric_name: str = "accuracy"
+
+    def _compute_loss(self, logits, targets):
+        return self.criterion(logits, targets)
+
+    def _extract_preds(self, logits, targets):
+        return logits.argmax(dim=-1).cpu().tolist(), targets.cpu().tolist()
+
+    def train_batch(self, batch):
+        inputs, targets = batch
+        inputs, targets = inputs.to(self.device), targets.to(self.device)
+        self.model.train()
+        self.optimizer.zero_grad()
+        logits = self.model(inputs)
+        loss = self._compute_loss(logits, targets)
+        loss.backward()
+        self.optimizer.step()
+        n = inputs.size(0)
+        return loss.item() * n, n
+
+    def eval_batch(self, batch):
+        inputs, targets = batch
+        inputs, targets = inputs.to(self.device), targets.to(self.device)
+        self.model.eval()
+        logits = self.model(inputs)
+        loss = self._compute_loss(logits, targets)
+        n = inputs.size(0)
+        preds, tgts = self._extract_preds(logits, targets)
+        return loss.item() * n, n, preds, tgts
+
+    def score(self, predictions, targets):
+        if not targets:
+            return {self._metric_name: 0.0}
+        return {self._metric_name: accuracy_score(targets, predictions)}
+
+    def checkpoint_metric(self, record):
+        return float(record.get(self._metric_name, -float("inf")))
+
+    def is_better(self, current, new):
+        return current is None or new > current
+
+    def save_model(self, path):
+        save_checkpoint(self.model, path)

@@ -11,6 +11,7 @@ from collections.abc import Callable
 from dataclasses import dataclass
 from typing import Any
 
+from belt.data.image import load_cifar10, load_fashion_mnist
 from belt.data.iris import SupervisedData, iris
 from belt.data.translation import TranslationData, load_translation_data
 
@@ -26,6 +27,14 @@ dataset_registry: dict[str, DatasetLoaders] = {
     "iris": DatasetLoaders(
         supervised=iris,
     ),
+    # Image Data
+    "fashion_mnist": DatasetLoaders(
+        supervised=load_fashion_mnist,
+    ),
+    "cifar10": DatasetLoaders(
+        supervised=load_cifar10,
+    ),
+    # Translation Data
     "opus_books_en_fr": DatasetLoaders(
         translation=load_translation_data,
     ),
@@ -37,7 +46,10 @@ dataset_registry: dict[str, DatasetLoaders] = {
 
 # Basic Registry for Models and other composable components
 class Registry(dict[str, type]):
-    """Maps string names to classes and supports decorator-based registration."""
+    """decorator based registration
+
+    used by the pipelines to register available models to run
+    """
 
     def register(self, name: str):
         def decorator(cls: type) -> type:

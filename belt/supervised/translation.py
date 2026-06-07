@@ -6,14 +6,13 @@ Daniel Nicolas Gisolfi <dgisolfi3@gatech.edu>
 """
 
 import torch
-from sklearn.metrics import accuracy_score
 from torch import nn
 
 from belt.data.translation import load_translation_data
 from belt.registry import dataset_registry
 from belt.supervised.models import supervised_model_registry
-from belt.supervised.pipeline import SupervisedPipeline
-from belt.utils import describe_device, get_device, save_checkpoint
+from belt.supervised.pipeline import TorchPipeline
+from belt.utils import describe_device, get_device
 
 
 def sequence_accuracy(logits, targets, pad_id):
@@ -48,8 +47,10 @@ def sample_translations(model, data, device, limit):
     return samples
 
 
-class TranslationPipeline(SupervisedPipeline):
-    """Supervised seq2seq translation pipeline."""
+class TranslationPipeline(TorchPipeline):
+    """Supervised seq2seq translation pipeline"""
+
+    _metric_name = "token_accuracy"
 
     def setup(self, config):
         self.device = get_device(config.get("device", "auto"))
@@ -91,38 +92,13 @@ class TranslationPipeline(SupervisedPipeline):
             weight_decay=config["training"]["weight_decay"],
         )
 
-    def train_batch(self, batch):
-        source, target = batch
-        source, target = source.to(self.device), target.to(self.device)
-        self.model.train()
-        self.optimizer.zero_grad()
-        logits = self.model(source)
-        loss = self.criterion(logits.reshape(-1, logits.size(-1)), target.reshape(-1))
-        loss.backward()
-        self.optimizer.step()
-        n = source.size(0)
-        return loss.item() * n, n
+    def _compute_loss(self, logits, targets):
+        return self.criterion(logits.reshape(-1, logits.size(-1)), targets.reshape(-1))
 
-    def eval_batch(self, batch):
-        source, target = batch
-        source, target = source.to(self.device), target.to(self.device)
-        self.model.eval()
-        logits = self.model(source)
-        loss = self.criterion(logits.reshape(-1, logits.size(-1)), target.reshape(-1))
-        n = source.size(0)
+    def _extract_preds(self, logits, targets):
         pad_id = self.data.source_tokenizer.pad_token_id
-        mask = target != pad_id
-        preds = logits.argmax(dim=-1)[mask].cpu().tolist()
-        targets = target[mask].cpu().tolist()
-        return loss.item() * n, n, preds, targets
-
-    def score(self, predictions, targets):
-        if not targets:
-            return {"token_accuracy": 0.0}
-        return {"token_accuracy": accuracy_score(targets, predictions)}
-
-    def save_model(self, path):
-        save_checkpoint(self.model, path)
+        mask = targets != pad_id
+        return logits.argmax(dim=-1)[mask].cpu().tolist(), targets[mask].cpu().tolist()
 
     def extra_metrics(self, config):
         return {

@@ -4,7 +4,7 @@ install:
 lint:
 	python -m black belt
 	python -m isort belt
-	python -m ruff check belt tests
+	python -m ruff check belt --fix
 
 train:
 	python -m belt.supervised.softmax --config configs/supervised_softmax.yaml
