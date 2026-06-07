@@ -204,7 +204,7 @@ cython_debug/
 tempCodeRunnerFile.py
 
 # Downloaded datasets and model cache
-data/
+/data/
 
 # Ruff stuff:
 .ruff_cache/

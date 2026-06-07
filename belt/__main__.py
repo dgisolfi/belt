@@ -10,16 +10,19 @@ Daniel Nicolas Gisolfi <dgisolfi3@gatech.edu>
 import argparse
 
 from belt.supervised.classifier import deploy as softmax_train
+from belt.supervised.generate import deploy as generate_train
 from belt.supervised.translation import deploy as translation_train
 
 _DEFAULT_CONFIGS: dict[str, str] = {
     "classifier": "configs/softmax_classifier.yaml",
     "translation": "configs/translation_small.yaml",
+    "generate": "configs/translation_small.yaml",
 }
 
 PIPELINES = {
     "classifier": softmax_train,
     "translation": translation_train,
+    "generate": generate_train,
 }
 
 

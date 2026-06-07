@@ -7,6 +7,7 @@ Daniel Nicolas Gisolfi <dgisolfi3@gatech.edu>
 
 import json
 import logging
+import os
 import random
 from pathlib import Path
 from time import perf_counter
@@ -21,6 +22,13 @@ logging.basicConfig(
     level=logging.INFO,
 )
 logger = logging.getLogger("belt")
+
+
+DATA_DIR = Path(__file__).parents[2] / "data"
+os.environ.setdefault("HF_HOME", str(DATA_DIR))
+if (DATA_DIR / "datasets").exists():
+    os.environ.setdefault("HF_DATASETS_OFFLINE", "1")
+    os.environ.setdefault("TRANSFORMERS_OFFLINE", "1")
 
 
 def load_config(path):
